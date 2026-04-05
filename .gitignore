@@ -1,0 +1,6 @@
+*.iif
+*.IIF
+*.CSV
+.venv/
+data/processed/
+mlruns/

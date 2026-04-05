@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mlflow-postgres
+  namespace: mlops
+type: Opaque
+stringData:
+  POSTGRES_DB: mlflow
+  POSTGRES_USER: mlflow
+  POSTGRES_PASSWORD: mlflow
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-postgres-pvc
+  namespace: mlops
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-postgres
+  namespace: mlops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow-postgres
+  template:
+    metadata:
+      labels:
+        app: mlflow-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: mlflow-postgres
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mlflow-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-postgres
+  namespace: mlops
+spec:
+  selector:
+    app: mlflow-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
