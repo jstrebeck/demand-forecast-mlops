@@ -128,10 +128,6 @@ demand-forecast-mlops/
 │   ├── pipeline.py             # Kubeflow Pipeline definition
 │   ├── components/             # Containerized pipeline step definitions
 │   └── cron_trigger.yaml       # CronWorkflow for scheduled runs
-├── k8s/
-│   ├── mlflow/                 # Helm values, PVC configs
-│   ├── kubeflow/               # Minimal Kubeflow install manifests
-│   └── kserve/                 # KServe operator configs
 ├── Dockerfiles/
 │   ├── train.Dockerfile        # Training step container
 │   ├── serve.Dockerfile        # Serving container

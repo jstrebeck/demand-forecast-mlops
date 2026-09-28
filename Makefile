@@ -5,6 +5,10 @@ PY := $(VENV)/bin/python3
 
 REGISTRY := 192.168.2.203:5000
 
+# k8s manifests live in the Homelab-Configuration repo
+HOMELAB_K8S ?= ../Homelab-Configuration/Kubernetes
+MLFLOW_K8S := $(HOMELAB_K8S)/mlflow
+
 .PHONY: venv activate deactivate \
 	db db-down \
 	ingest features validate load-db pipeline \
@@ -94,21 +98,21 @@ push-all: push-mlflow push-train push-serve push-pipeline
 
 # ── Kubernetes Deployments ───────────────────────────────
 deploy-mlflow: push-mlflow
-	kubectl apply -f k8s/mlflow/namespace.yaml
-	kubectl apply -f k8s/mlflow/postgres.yaml
-	kubectl apply -f k8s/mlflow/mlflow.yaml
+	kubectl apply -f $(MLFLOW_K8S)/namespace.yaml
+	kubectl apply -f $(MLFLOW_K8S)/postgres.yaml
+	kubectl apply -f $(MLFLOW_K8S)/mlflow.yaml
 	kubectl rollout restart deployment/mlflow -n mlops
 	kubectl rollout status deployment/mlflow -n mlops --timeout=90s
 
 deploy-k8s:
-	kubectl apply -f k8s/mlflow/namespace.yaml
-	kubectl apply -f k8s/mlflow/postgres.yaml
-	kubectl apply -f k8s/mlflow/mlflow.yaml
+	kubectl apply -f $(MLFLOW_K8S)/namespace.yaml
+	kubectl apply -f $(MLFLOW_K8S)/postgres.yaml
+	kubectl apply -f $(MLFLOW_K8S)/mlflow.yaml
 
 teardown-k8s:
-	kubectl delete -f k8s/mlflow/mlflow.yaml --ignore-not-found
-	kubectl delete -f k8s/mlflow/postgres.yaml --ignore-not-found
-	kubectl delete -f k8s/mlflow/namespace.yaml --ignore-not-found
+	kubectl delete -f $(MLFLOW_K8S)/mlflow.yaml --ignore-not-found
+	kubectl delete -f $(MLFLOW_K8S)/postgres.yaml --ignore-not-found
+	kubectl delete -f $(MLFLOW_K8S)/namespace.yaml --ignore-not-found
 
 status:
 	@echo "=== Pods ==="

@@ -51,7 +51,8 @@ features.parquet → train.py (baseline + LSTM) → MLflow (http://192.168.2.202
 - **MLflow PostgreSQL:** ClusterIP service, Ceph PVC (`mlflow-postgres-pvc`, 5Gi)
 - **Storage:** `ceph-block` StorageClass (default), Rook-Ceph
 - **Registry:** `192.168.2.203:5000` (in-cluster, `registry` namespace)
-- Manifests in `k8s/mlflow/` (namespace.yaml, postgres.yaml, mlflow.yaml)
+- **Manifests are NOT in this repo.** They live in the Homelab-Configuration repo (`/home/vba2/Documents/git/Homelab-Configuration/Kubernetes/mlflow/`: namespace.yaml, postgres.yaml, mlflow.yaml) so they can be shared across projects. Edit and commit them there.
+- Makefile reads them via `HOMELAB_K8S` (default `../Homelab-Configuration/Kubernetes`); override with `HOMELAB_K8S=/path make deploy-k8s`
 
 ## Makefile Commands
 
@@ -82,7 +83,7 @@ features.parquet → train.py (baseline + LSTM) → MLflow (http://192.168.2.202
 
 ### Kubernetes
 - `make deploy-mlflow` — full cycle: build, push, deploy, restart MLflow
-- `make deploy-k8s` — apply all k8s manifests
+- `make deploy-k8s` — apply all k8s manifests (from Homelab-Configuration repo)
 - `make teardown-k8s` — tear down everything
 - `make status` — check pods and services in mlops namespace
 
